@@ -3,7 +3,7 @@ jdk:
 - openjdk7
 - oraclejdk7
 install: true
-script: "./gradlew build --log || ./gradlew build"
+script: "./gradlew build --info || ./gradlew build"
 before_install:
 - export JAVA7_HOME=$(jdk_switcher home jdk7)
 after_success:
