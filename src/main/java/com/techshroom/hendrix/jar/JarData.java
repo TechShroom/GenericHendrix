@@ -1,10 +1,12 @@
 package com.techshroom.hendrix.jar;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -81,8 +83,23 @@ public final class JarData {
     public static void removeEntry(JarFile jar, JarEntry remove)
                     throws IOException {
         File tmp = File.createTempFile("hendrix-jar-copy", ".jar");
-        try (JarOutputStream jarStream =
-                        new JarOutputStream(new FileOutputStream(tmp));) {
+        try (OutputStream fileOut = new FileOutputStream(tmp);
+                        JarOutputStream jarStream =
+                                        new JarOutputStream(
+                                                        new ByteArrayOutputStream() {
+                                                            @Override
+                                                            public void flush()
+                                                                            throws IOException {
+                                                                byte[] data =
+                                                                                toByteArray();
+                                                                System.err.println(">>>data"
+                                                                                + new String(
+                                                                                                data)
+                                                                                + "data<<<");
+                                                                reset();
+                                                                fileOut.write(data);
+                                                            }
+                                                        });) {
             jarStream.setComment(jar.getComment());
 
             Manifest man = jar.getManifest();
@@ -103,9 +120,7 @@ public final class JarData {
                 }
                 jarStream.putNextEntry(entry);
                 try (InputStream dataSource = jar.getInputStream(entry)) {
-                    byte[] data = ByteStreams.toByteArray(dataSource);
-                    System.out.println(new String(data));
-                    jarStream.write(data);
+                    ByteStreams.copy(dataSource, jarStream);
                 }
                 jarStream.closeEntry();
             }

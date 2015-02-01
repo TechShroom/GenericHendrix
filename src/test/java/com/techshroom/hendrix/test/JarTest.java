@@ -80,8 +80,8 @@ public class JarTest {
             failException(cantRead);
             return;
         }
-        System.err.println(new String(data));
-        System.err.println(new String(match));
+        System.err.println(">>>data" + new String(data) + "data<<<");
+        System.err.println(">>>match" + new String(match) + "match<<<");
         assertArrayEquals("jar data doesn't match", data, match);
     }
 
