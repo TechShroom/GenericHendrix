@@ -3,13 +3,14 @@ jdk:
 - openjdk7
 - oraclejdk7
 install: true
-script: ./gradlew build || ./gradlew build
+script: "./gradlew build || ./gradlew build"
 before_install:
 - export JAVA7_HOME=$(jdk_switcher home jdk7)
 after_success:
-- ./gradlew travisRelease
+- "./gradlew travisRelease"
 after_failure:
-- ./gradlew build --stacktrace --debug
+- "./gradlew build --stacktrace --debug"
 env:
-  secure: C9Ai91c5zEUOsrF/clhpQBbgu+wK91fdWpO7PWrhFmT09gOPXompI1SHz3iN3RCtJ2WLu1KMmuQe9vz8RkyRib6vHcPGDAi9Nwi0tyb5heQ3GobYm/hb1zEFSyeMuj14mA6WtjrfR1MrCT5uo4mZ/eK1tVjLed2ZDuuF5mt4rMo=
+  global:
+    secure: g6VTS4WjMmuT0erHn6VVdz21XQM9ix7u20+FgpkphL3IjEBkpLQr5bQTGXc8N2ORuV5Lw9ANh77jGG3MutA6gOw7EEolTeZOGzAFOiSu7QjbgBoUy2Xyb/FLNWmByFWgqSx8fH8CmiR5nNVmjco9BxrInSz7tNbMhVPWw7pj8zg=
 sudo: false
