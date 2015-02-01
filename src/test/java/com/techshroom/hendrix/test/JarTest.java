@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -81,9 +80,7 @@ public class JarTest {
             failException(cantRead);
             return;
         }
-        System.out.println(Arrays.toString(data));
         System.err.println(new String(data));
-        System.out.println(Arrays.toString(match));
         System.err.println(new String(match));
         assertArrayEquals("jar data doesn't match", data, match);
     }

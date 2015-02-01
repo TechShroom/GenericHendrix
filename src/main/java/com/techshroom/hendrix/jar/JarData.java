@@ -103,7 +103,9 @@ public final class JarData {
                 }
                 jarStream.putNextEntry(entry);
                 try (InputStream dataSource = jar.getInputStream(entry)) {
-                    ByteStreams.copy(dataSource, jarStream);
+                    byte[] data = ByteStreams.toByteArray(dataSource);
+                    System.out.println(new String(data));
+                    jarStream.write(data);
                 }
                 jarStream.closeEntry();
             }
