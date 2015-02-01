@@ -14,7 +14,11 @@ println "=== Configuring $name ==="
 
 def root = project
 
+apply plugin: 'eclipse'
 // java 7 compat
+ext.eclipse17='org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7'
+eclipse.classpath.containers.clear()
+eclipse.classpath.containers eclipse17
 compileJava.sourceCompatibility = '1.7'
 compileJava.targetCompatibility = '1.7'
 version = root.version
@@ -23,7 +27,6 @@ jar {
     version = root.version
 }
 
-apply plugin: 'eclipse'
 apply plugin: 'apt2'
 
 eclipse {
@@ -34,12 +37,25 @@ eclipse {
 }
 
 // eclipse bug workaround
-task reeclipse(dependsOn: ['cleanEclipseClasspath', 'eclipse'])
+project.tasks.eclipse.dependsOn('cleanEclipse')
 
 repositories {
     mavenCentral()
     maven {
         url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+}
+
+sourceSets {
+    testData {
+        java {
+            srcDir 'src/test/java-export'
+            output.classesDir 'testData/classes'
+        }
+        resources {
+            srcDir 'src/test/resources-export'
+        }
+        compileClasspath += sourceSets.main.runtimeClasspath
     }
 }
 
@@ -68,6 +84,7 @@ dependencies {
     compile 'org.functionaljava:functionaljava:4.2-beta-1'
     // I think this is only for java 8 // compile 'org.functionaljava:functionaljava-java8:4.2-beta-1'
     addAPTReqWComp group: 'com.google.guava', name: 'guava', version: '18.0'
+    addAPTReqWComp group: 'org.ow2.asm', name: 'asm-debug-all', version: '5.0.3'
     addAPT group: 'com.google.auto.factory', name: 'auto-factory', version: '0.1-beta1'
     addAPT group: 'com.google.auto.service', name: 'auto-service', version: '1.0-rc2'
     addAPT group: 'com.google.auto.value', name: 'auto-value', version: '1.0-rc4'
