@@ -132,6 +132,7 @@ public final class JarData {
                 }
                 jarStream.closeEntry();
             }
+            System.err.println(jar.getName());
             tmp.renameTo(new File(jar.getName()));
         } finally {
             if (!tmp.delete()) {
