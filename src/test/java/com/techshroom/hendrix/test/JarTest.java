@@ -4,8 +4,10 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -23,6 +25,7 @@ import com.techshroom.hendrix.jar.JarData;
  */
 public class JarTest {
     private File testJarLocation;
+    private File testJarTarget;
 
     /**
      * Chooses the test JAR location.
@@ -31,29 +34,48 @@ public class JarTest {
     public void chooseUJarLocation() {
         this.testJarLocation = new File("testData/jars/jartest.jar");
         assertTrue("jar doesn't exist", this.testJarLocation.exists());
+        this.testJarTarget = new File("testData/jars/jartest_target.jar");
+        try {
+            assertTrue("jar does exist",
+                            this.testJarTarget.exists() ? this.testJarTarget
+                                            .delete() : this.testJarTarget
+                                            .createNewFile());
+        } catch (IOException cannotCreate) {
+            failException(cannotCreate);
+            return;
+        }
+        try (InputStream in = new FileInputStream(this.testJarLocation);
+                        OutputStream out =
+                                        new FileOutputStream(this.testJarTarget)) {
+            ByteStreams.copy(in, out);
+        } catch (IOException cantRead) {
+            failException(cantRead);
+            return;
+        }
+        this.testJarTarget.deleteOnExit();
     }
 
     /**
-     * Run a replaceEntry with a non-existent entry. Nothing should be changed.
+     * Run a removeEntry with a non-existent entry. Nothing should be changed.
      */
     @Test
     public void rewritesNothing() {
         byte[] data;
-        try (InputStream in = new FileInputStream(this.testJarLocation)) {
+        try (InputStream in = new FileInputStream(this.testJarTarget)) {
             data = ByteStreams.toByteArray(in);
         } catch (IOException cantRead) {
             failException(cantRead);
             return;
         }
         try {
-            JarData.replaceEntry(new JarFile(this.testJarLocation),
-                            new JarEntry("i/don't/exist/.txt"), new byte[0]);
+            JarData.removeEntry(new JarFile(this.testJarTarget), new JarEntry(
+                            "i/don't/exist/.txt"));
         } catch (IOException e) {
             failException(e);
             return;
         }
         byte[] match;
-        try (InputStream in = new FileInputStream(this.testJarLocation)) {
+        try (InputStream in = new FileInputStream(this.testJarTarget)) {
             match = ByteStreams.toByteArray(in);
         } catch (IOException cantRead) {
             failException(cantRead);
