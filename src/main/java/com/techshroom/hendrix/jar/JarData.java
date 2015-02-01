@@ -119,9 +119,11 @@ public final class JarData {
                             .hasMoreElements();) {
                 JarEntry entry = entries.nextElement();
                 if (entry.getName().equals(JarFile.MANIFEST_NAME)) {
+                    System.err.println("skipping manifest");
                     continue;
                 }
                 if (remove.getName().equals(entry.getName())) {
+                    System.err.println("skipping removal");
                     continue;
                 }
                 jarStream.putNextEntry(entry);
