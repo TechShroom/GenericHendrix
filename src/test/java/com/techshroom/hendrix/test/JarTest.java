@@ -31,7 +31,7 @@ public class JarTest {
      * Chooses the test JAR location.
      */
     @Before
-    public void chooseUJarLocation() {
+    public void chooseJarLocation() {
         this.testJarLocation = new File("testData/jars/jartest.jar");
         assertTrue("jar doesn't exist", this.testJarLocation.exists());
         this.testJarTarget = new File("testData/jars/jartest_target.jar");
