@@ -82,7 +82,9 @@ public class JarTest {
             return;
         }
         System.out.println(Arrays.toString(data));
+        System.err.println(new String(data));
         System.out.println(Arrays.toString(match));
+        System.err.println(new String(match));
         assertArrayEquals("jar data doesn't match", data, match);
     }
 
