@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,6 +53,16 @@ public class JarTest {
             return;
         }
         this.testJarTarget.deleteOnExit();
+    }
+
+    /**
+     * Kill the jars.
+     */
+    @After
+    public void killJar() {
+        if (!this.testJarTarget.delete()) {
+            this.testJarTarget.deleteOnExit();
+        }
     }
 
     /**

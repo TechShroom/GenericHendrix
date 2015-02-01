@@ -99,6 +99,12 @@ public final class JarData {
                                                                 reset();
                                                                 fileOut.write(data);
                                                             }
+                                                            
+                                                            @Override
+                                                            public void close()
+                                                                            throws IOException {
+                                                                flush();
+                                                            }
                                                         });) {
             jarStream.setComment(jar.getComment());
 
