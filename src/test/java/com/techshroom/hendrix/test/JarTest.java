@@ -8,12 +8,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import com.google.common.io.ByteStreams;
 import com.techshroom.hendrix.jar.JarData;
@@ -63,37 +60,6 @@ public class JarTest {
         if (!this.testJarTarget.delete()) {
             this.testJarTarget.deleteOnExit();
         }
-    }
-
-    /**
-     * Run a removeEntry with a non-existent entry. Nothing should be changed.
-     */
-    @Test
-    public void rewritesNothing() {
-        byte[] data;
-        try (InputStream in = new FileInputStream(this.testJarTarget)) {
-            data = ByteStreams.toByteArray(in);
-        } catch (IOException cantRead) {
-            failException(cantRead);
-            return;
-        }
-        try {
-            JarData.removeEntry(new JarFile(this.testJarTarget), new JarEntry(
-                            "i/don't/exist/.txt"));
-        } catch (IOException e) {
-            failException(e);
-            return;
-        }
-        byte[] match;
-        try (InputStream in = new FileInputStream(this.testJarTarget)) {
-            match = ByteStreams.toByteArray(in);
-        } catch (IOException cantRead) {
-            failException(cantRead);
-            return;
-        }
-        System.err.println(">>>data" + new String(data) + "data<<<");
-        System.err.println(">>>match" + new String(match) + "match<<<");
-        assertArrayEquals("jar data doesn't match", data, match);
     }
 
     private void failException(IOException e) {
