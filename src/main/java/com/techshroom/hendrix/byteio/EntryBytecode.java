@@ -1,5 +1,6 @@
 package com.techshroom.hendrix.byteio;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.jar.JarEntry;
@@ -45,7 +46,7 @@ public class EntryBytecode extends BasicBytecodeContainer {
     @Override
     protected void save(byte[] bytes) {
         try {
-            JarData.replaceEntry(this.sourceJar, this.entry, bytes);
+            JarData.replaceEntry(new File(this.sourceJar.getName()), this.entry, bytes);
         } catch (IOException e) {
             suppress(e);
         }
