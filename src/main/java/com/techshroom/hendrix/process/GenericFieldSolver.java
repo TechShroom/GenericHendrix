@@ -109,7 +109,9 @@ public final class GenericFieldSolver {
      * @param setNode - The field instruction that is doing the set
      */
     public void addSet(FieldInsnNode setNode) {
+        if (shouldUseData()) {
 
+        }
     }
 
     /**
