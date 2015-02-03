@@ -57,12 +57,12 @@ task travisRelease(dependsOn: ['_zipassets']) << {
 
         def file = project.file("$project.assetArchiveDestDir/$project.aName")
 
-        args '--ftp-create-dirs', '-T', "$file", '-u', "$FTP_USER:$FTP_PASSWORD", 'ftp://475.076.myftpupload.com/non-wp/uploads/travis-ci/commital/UD/' + "UD-$commit_sha-all.zip"
+        args '--ftp-create-dirs', '-T', "$file", '-u', "$FTP_USER:$FTP_PASSWORD", 'ftp://475.076.myftpupload.com/non-wp/uploads/travis-ci/commital/GH/' + "GH-$commit_sha-all.zip"
     }
     
     Map<String, String> data = new HashMap<String, String>();
-    data.put("r|e|p|o", "UnplannedDescent");
-    data.put("r|e|p|odir", "UD");
+    data.put("r|e|p|o", "GenericHendrix");
+    data.put("r|e|p|odir", "GH");
     data.put("o|w|n|er", "TechShroom");
     doSubmit("http://techshroom.com/non-wp/uploads/manager/commit.php", data);
 }
