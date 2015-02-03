@@ -14,3 +14,6 @@ env:
   global:
     secure: g6VTS4WjMmuT0erHn6VVdz21XQM9ix7u20+FgpkphL3IjEBkpLQr5bQTGXc8N2ORuV5Lw9ANh77jGG3MutA6gOw7EEolTeZOGzAFOiSu7QjbgBoUy2Xyb/FLNWmByFWgqSx8fH8CmiR5nNVmjco9BxrInSz7tNbMhVPWw7pj8zg=
 sudo: false
+cache:
+  directories:
+  - $HOME/.gradle/caches
