@@ -1,9 +1,8 @@
 package com.techshroom.hendrix.asmsucks;
 
-import static com.google.common.base.Verify.verify;
+import static com.google.common.base.Preconditions.checkState;
 import static com.techshroom.hendrix.asmsucks.SharedRegexBits.*;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,6 +14,9 @@ import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
+import com.techshroom.hendrix.Util;
+
+import fj.data.Array;
 
 /**
  * A method descriptor describes a reference to a method. There's not a big
@@ -26,7 +28,6 @@ import com.google.common.collect.ImmutableList;
  */
 @AutoValue
 public abstract class MethodDescriptor {
-    private static final Splitter SLASH = Splitter.on('/');
     private static final Splitter SEMICOLON = Splitter.on(';');
     private static final Function<String, ClassDescriptor> TO_CD =
                     new Function<String, ClassDescriptor>() {
@@ -55,26 +56,15 @@ public abstract class MethodDescriptor {
      */
     public static final MethodDescriptor fromDescriptorString(String desc) {
         Matcher match = DESC_METHOD_PAT.matcher(desc);
+        checkState(match.matches(), "Invalid method descriptor");
         List<ClassDescriptor> args =
                         FluentIterable.from(SEMICOLON.split(match.group(ARGS)))
                                         .transform(TO_CD).toList();
         ClassDescriptor returnType = TO_CD.apply(match.group(RETURN));
-        StringBuilder classNameBuilder = new StringBuilder();
-        String methodName = null;
-        for (Iterator<String> parts = SLASH.split(match.group(NAME)).iterator(); parts
-                        .hasNext();) {
-            String part = parts.next();
-            if (parts.hasNext()) {
-                // building class name
-                classNameBuilder.append('.').append(part);
-            } else {
-                // last is method name
-                methodName = part;
-            }
-        }
-        verify(methodName != null, "no method name");
-        return fromRaw(ClassDescriptor.fromSourcecodeReference(classNameBuilder
-                        .toString()), methodName, args, returnType);
+        Array<String> classAndMethod =
+                        Util.splitReplaceAndPopLast(match.group(NAME), '/', '.');
+        return fromRaw(ClassDescriptor.fromSourcecodeReference(classAndMethod
+                        .get(0)), classAndMethod.get(1), args, returnType);
     }
 
     /**
