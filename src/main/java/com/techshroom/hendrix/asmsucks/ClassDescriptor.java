@@ -79,8 +79,16 @@ public abstract class ClassDescriptor {
         Matcher match =
                         SRC_PATTERN.matcher(checkNotNull(sourceRef,
                                         "source reference string cannot be null"));
-        checkArgument(match.matches(), "Invalid class source reference '%s'",
-                        sourceRef);
+        try {
+            checkArgument(match.matches(),
+                            "Invalid class source reference '%s'", sourceRef);
+        } catch (IllegalArgumentException e) {
+            if (SharedData.debug) {
+                System.err.println("Matching against '" + SRC_PATTERN.pattern()
+                                + "'");
+            }
+            throw e;
+        }
         int arrayDepth = srcArrayDepth(match);
         char type = srcStringType(match);
         List<String> path = srcStringPath(match);

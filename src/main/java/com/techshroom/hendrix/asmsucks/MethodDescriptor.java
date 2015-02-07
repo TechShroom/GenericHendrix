@@ -17,6 +17,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
+import com.techshroom.hendrix.SharedData;
 import com.techshroom.hendrix.Util;
 
 import fj.data.Array;
@@ -82,7 +83,16 @@ public abstract class MethodDescriptor {
      */
     public static final MethodDescriptor fromDescriptorString(String desc) {
         Matcher match = DESC_METHOD_PAT.matcher(desc);
-        checkArgument(match.matches(), "Invalid method descriptor '%s'", desc);
+        try {
+            checkArgument(match.matches(), "Invalid method descriptor '%s'",
+                            desc);
+        } catch (IllegalArgumentException e) {
+            if (SharedData.debug) {
+                System.err.println("Matching against '"
+                                + DESC_METHOD_PAT.pattern() + "'");
+            }
+            throw e;
+        }
         List<ClassDescriptor> args =
                         FluentIterable.from(
                                         SEMICOLON.omitEmptyStrings().split(
