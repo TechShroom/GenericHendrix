@@ -1,6 +1,6 @@
 package com.techshroom.hendrix.asmsucks;
 
-import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Preconditions.*;
 import static com.techshroom.hendrix.asmsucks.SharedRegexBits.*;
 
 import java.util.List;
@@ -11,6 +11,7 @@ import com.google.auto.value.AutoValue;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+import com.techshroom.hendrix.SharedData;
 
 /**
  * A class descriptor describes a reference to a class. This bridges the gap
@@ -41,16 +42,24 @@ public abstract class ClassDescriptor {
                     SRC_ARRAY_CHARS = Joiner.on("[]").useForNull("");
 
     /**
-     * Make a descriptor from a descriptor string. This will ignore a missing
-     * semicolon at the end.
+     * Creates a class descriptor from a descriptor string.
      * 
      * @param desc - The descriptor string
      * @return A new descriptor object
      */
     public static final ClassDescriptor fromDescriptorString(String desc) {
-        Matcher match = DESC_PATTERN.matcher(desc);
-        if (!match.matches()) {
-            throw new IllegalArgumentException("Couldn't parse '" + desc + "'");
+        Matcher match =
+                        DESC_PATTERN.matcher(checkNotNull(desc,
+                                        "descriptor string cannot be null"));
+        try {
+            checkArgument(match.matches(), "Invalid class descriptor '%s'",
+                            desc);
+        } catch (IllegalArgumentException e) {
+            if (SharedData.debug) {
+                System.err.println("Matching against '"
+                                + DESC_PATTERN.pattern() + "'");
+            }
+            throw e;
         }
         int arrayDepth = descArrayDepth(match);
         char type = descStringType(match);
@@ -61,23 +70,34 @@ public abstract class ClassDescriptor {
     }
 
     /**
-     * Make a descriptor from a sourcecode reference string.
+     * Creates a class descriptor from a sourcecode reference string.
      * 
      * @param sourceRef - The sourcecode reference string
      * @return A new descriptor object
      */
     public static final ClassDescriptor fromSourcecodeReference(String sourceRef) {
-        Matcher match = SRC_PATTERN.matcher(sourceRef);
-        if (!match.matches()) {
-            throw new IllegalArgumentException("Couldn't parse '" + sourceRef
-                            + "'");
-        }
+        Matcher match =
+                        SRC_PATTERN.matcher(checkNotNull(sourceRef,
+                                        "source reference string cannot be null"));
+        checkArgument(match.matches(), "Invalid class source reference '%s'",
+                        sourceRef);
         int arrayDepth = srcArrayDepth(match);
         char type = srcStringType(match);
         List<String> path = srcStringPath(match);
         ClassDescriptor generic = srcGeneric(match);
         return new AutoValue_ClassDescriptor(arrayDepth, type, path,
                         Optional.fromNullable(generic));
+    }
+
+    /**
+     * Creates a class descriptor from a Class object.
+     * 
+     * @param source - The source Class object
+     * @return A new descriptor object
+     */
+    public static final ClassDescriptor fromClass(Class<?> source) {
+        checkNotNull(source, "source class cannot be null");
+        return fromDescriptorString(source.getName());
     }
 
     private static int descArrayDepth(Matcher desc) {
