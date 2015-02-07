@@ -54,13 +54,14 @@ public final class Util {
                 firstBits = str.substring(0, lastSep);
             } else {
                 int[] data = stringToCodePoints(str);
-                for (int i = 0; i < data.length || i < lastSep; i++) {
+                for (int i = 0; i < lastSep; i++) {
                     int codePoint = data[i];
                     if (codePoint == sep) {
                         codePoint = replace;
                     }
+                    data[i] = codePoint;
                 }
-                firstBits = new String(data, 0, data.length);
+                firstBits = new String(data, 0, lastSep);
             }
         } else {
             firstBits = str;
