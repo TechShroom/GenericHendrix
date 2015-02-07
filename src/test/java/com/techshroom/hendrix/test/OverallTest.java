@@ -12,11 +12,13 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.common.base.Throwables;
 import com.techshroom.hendrix.Main;
+import com.techshroom.hendrix.SharedData;
 
 /**
  * General test for ensuring this works at all.
@@ -24,6 +26,7 @@ import com.techshroom.hendrix.Main;
  * @author Kenzie Togami
  */
 public final class OverallTest implements TestConstants {
+    private static boolean oldDebugState;
 
     /**
      * Loads our exit handler into the VM.
@@ -31,6 +34,23 @@ public final class OverallTest implements TestConstants {
     @BeforeClass
     public static void loadExitHandler() {
         ExitAsError.loadClass();
+    }
+
+    /**
+     * Set the debug flag to true for testing.
+     */
+    @BeforeClass
+    public static void setDebug() {
+        oldDebugState = SharedData.debug;
+        SharedData.debug = true;
+    }
+
+    /**
+     * Reset the debug flag.
+     */
+    @AfterClass
+    public static void resetDebug() {
+        SharedData.debug = oldDebugState;
     }
 
     /**

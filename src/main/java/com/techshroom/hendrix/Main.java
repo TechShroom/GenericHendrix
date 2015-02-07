@@ -20,8 +20,10 @@ import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.techshroom.hendrix.byteio.BytecodeSupplier;
+import com.techshroom.hendrix.mapping.load.manual.ManualMappingProvider;
 import com.techshroom.hendrix.process.ProcessEntry;
 
+import fj.F;
 import fj.data.Array;
 
 /**
@@ -45,6 +47,13 @@ public final class Main {
                         @Override
                         public String valuePattern() {
                             return null;
+                        }
+                    };
+    private static final F<Path, ManualMappingProvider> TO_MANUAL_MAPPING =
+                    new F<Path, ManualMappingProvider>() {
+                        @Override
+                        public ManualMappingProvider f(Path a) {
+                            return new ManualMappingProvider(a);
                         }
                     };
     private static final OptionParser PARSER = new OptionParser();
@@ -134,8 +143,10 @@ public final class Main {
         ProcessEntry entry =
                         new ProcessEntry(Iterables.concat(transformBytecode,
                                         classpathBytecode),
-                                        checkManualMappings(opts));
+                                        checkManualMappings(opts).map(
+                                                        TO_MANUAL_MAPPING));
         entry.process();
+        System.err.println("Complete.");
     }
 
     private static void checkADoesntStartWithB(Path a, Path b) {
