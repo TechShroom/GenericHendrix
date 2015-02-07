@@ -2,6 +2,10 @@ ext.FTP_USER="ket1999"
 version = ext.version = "1.0.0"
 
 apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'com.techshroom.hendrix.Main'
+
 apply from: 'util.gradle', to: project
 
 // token: a54f9f87121b530f4a918f7b156efb2c259ff0db

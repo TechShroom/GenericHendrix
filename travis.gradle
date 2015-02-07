@@ -22,7 +22,6 @@ ext.doSubmit = { url, x ->
         }
         content += key + "=" + URLEncoder.encode(x.get(key), "UTF-8");
     }
-    System.out.println(content);
     out.writeBytes(content);
     out.flush();
     out.close();
@@ -57,7 +56,7 @@ task travisRelease(dependsOn: ['_zipassets']) << {
 
         def file = project.file("$project.assetArchiveDestDir/$project.aName")
 
-        args '--ftp-create-dirs', '-T', "$file", '-u', "$FTP_USER:$FTP_PASSWORD", 'ftp://475.076.myftpupload.com/non-wp/uploads/travis-ci/commital/GH/' + "GH-$commit_sha-all.zip"
+        args '--ftp-create-dirs', '-T', "$file", '-u', "$FTP_USER:$FTP_PASSWORD", 'ftp://475.076.myftpupload.com/non-wp/uploads/travis-ci/commital/GH/' + "GH-$commit_sha.zip"
     }
     
     Map<String, String> data = new HashMap<String, String>();
