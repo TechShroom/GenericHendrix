@@ -33,7 +33,7 @@ ext.doSubmit = { url, x ->
     inx.close();
 }
 
-task travisRelease(dependsOn: ['_zipassets']) << {
+task travisRelease(dependsOn: ['moveAssets']) << {
 
     def commit_sha = ""
 
