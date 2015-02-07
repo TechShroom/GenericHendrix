@@ -3,7 +3,7 @@ package com.techshroom.hendrix.byteio;
 import com.google.common.base.Optional;
 
 /**
- * Basic in-memory bytecode container. This class has a {@link #save()} method
+ * Basic in-memory bytecode container. This class has a {@link #save(byte[])} method
  * and a {@link #load()} method which are called to save and load to some other
  * storage, if needed.
  * 
