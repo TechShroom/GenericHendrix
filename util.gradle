@@ -44,7 +44,7 @@ ext.aName = 'upload-' + project.version + '.zip'
 
 task moveAssets (type: Copy, dependsOn: ["distZip"]) {
     from 'build/distributions'
-    into project.file(project.assetArchiveDir)
+    into project.file(project.assetArchiveDestDir)
     rename { fileName ->
         project.aName
     }
