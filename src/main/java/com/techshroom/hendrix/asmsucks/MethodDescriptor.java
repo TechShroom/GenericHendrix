@@ -1,17 +1,20 @@
 package com.techshroom.hendrix.asmsucks;
 
-import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.techshroom.hendrix.asmsucks.SharedRegexBits.*;
 
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import autovalue.shaded.com.google.common.common.base.Joiner;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodNode;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.techshroom.hendrix.Util;
@@ -38,9 +41,32 @@ public abstract class MethodDescriptor {
                     };
     private static final int NAME = 1, ARGS = 2, RETURN = 3;
     private static final Pattern DESC_METHOD_PAT = Pattern
-                    .compile(group(JAVA_BYTE_ID) + literal("(")
+                    .compile(group(__joinBySepEx(JAVA_ID_PART,
+                                    oneOf(JAVA_ID_PART, "<init>", "<clinit>"),
+                                    "/"))
+                                    + literal("(")
                                     + group(noneOrMore(CLASS_DESCRIPTOR))
                                     + literal(")") + group(CLASS_DESCRIPTOR));
+    private static final Function<ClassDescriptor, String> TO_GENERIC_REF =
+                    new Function<ClassDescriptor, String>() {
+                        @Override
+                        public String apply(ClassDescriptor input) {
+                            return input.toDescriptorString();
+                        }
+                    };
+
+    /**
+     * Creates a MethodDescriptor from a ClassNode and a MethodName.
+     * 
+     * @param clazz - The class node containing the method
+     * @param method - The method node
+     * @return The new MethodDescriptor
+     */
+    public static final MethodDescriptor fromClassAndMethodNode(
+                    ClassNode clazz, MethodNode method) {
+        return fromDescriptorString(clazz.name + "/" + method.name
+                        + method.desc);
+    }
 
     /**
      * Parses a descriptor string into a method descriptor.
@@ -56,9 +82,11 @@ public abstract class MethodDescriptor {
      */
     public static final MethodDescriptor fromDescriptorString(String desc) {
         Matcher match = DESC_METHOD_PAT.matcher(desc);
-        checkState(match.matches(), "Invalid method descriptor");
+        checkArgument(match.matches(), "Invalid method descriptor '%s'", desc);
         List<ClassDescriptor> args =
-                        FluentIterable.from(SEMICOLON.split(match.group(ARGS)))
+                        FluentIterable.from(
+                                        SEMICOLON.omitEmptyStrings().split(
+                                                        match.group(ARGS)))
                                         .transform(TO_CD).toList();
         ClassDescriptor returnType = TO_CD.apply(match.group(RETURN));
         Array<String> classAndMethod =
@@ -115,8 +143,13 @@ public abstract class MethodDescriptor {
 
     @Override
     public String toString() {
-        return getContainingClass().toSourcecodeRef() + "." + getName() + "("
-                        + Joiner.on("").join(getArguments()) + ")"
+        return getContainingClass().toSourcecodeRef().replace('.', '/')
+                        + "/"
+                        + getName()
+                        + "("
+                        + Joiner.on("").join(
+                                        Collections2.transform(getArguments(),
+                                                        TO_GENERIC_REF)) + ")"
                         + getReturnClass().toDescriptorString();
     }
 
