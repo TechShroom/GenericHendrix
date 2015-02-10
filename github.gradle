@@ -113,7 +113,7 @@ task setupGithub() << {
     _.proj = git.repos().get(projCoord)
 }
 
-task release(dependsOn: ['setupGithub', 'doBuild']) << {
+task release(dependsOn: ['setupGithub', 'build']) << {
     if (project.githubAuthMethod == 0) {
         // no auth, no upload!
         throw new RuntimeException("No authorization for upload!")

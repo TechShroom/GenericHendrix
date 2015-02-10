@@ -1,5 +1,6 @@
 ext.FTP_USER="ket1999"
-version = ext.version = "1.0.0"
+group = "com.techshroom"
+version = "1.0.0"
 
 apply plugin: 'java'
 apply plugin: 'application'
@@ -20,23 +21,19 @@ def root = project
 
 apply plugin: 'eclipse'
 // java 7 compat
-ext.eclipse17='org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7'
+ext.JAVA_COMPAT = '1.7'
+ext.eclipse17='org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-' + JAVA_COMPAT
 eclipse.classpath.containers.clear()
 eclipse.classpath.containers eclipse17
-compileJava.sourceCompatibility = '1.7'
-compileJava.targetCompatibility = '1.7'
-version = root.version
-
-jar {
-    version = root.version
-}
+compileJava.sourceCompatibility = JAVA_COMPAT
+compileJava.targetCompatibility = JAVA_COMPAT
 
 apply plugin: 'apt2'
 
 eclipse {
     jdt {
-        sourceCompatibility = 1.7
-        targetCompatibility = 1.7
+        sourceCompatibility = JAVA_COMPAT
+        targetCompatibility = JAVA_COMPAT
     }
 }
 
@@ -105,6 +102,16 @@ dependencies {
     addAPTReq name: 'velocity'
 
     testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+apply plugin: 'maven'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: file("../Techshroom.github.io/downloads/maven").toURI().toURL())
+        }
+    }
 }
 
 println '=== Complete ==='
