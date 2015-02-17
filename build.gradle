@@ -1,44 +1,41 @@
 ext.FTP_USER="ket1999"
 group = "com.techshroom"
 version = "1.0.0"
-
-apply plugin: 'java'
-apply plugin: 'application'
-
-mainClassName = 'com.techshroom.hendrix.Main'
-
-apply from: 'util.gradle', to: project
-
-// token: a54f9f87121b530f4a918f7b156efb2c259ff0db
-
-// ext.oauth = "a54f9f87121b530f4a918f7b156efb2c259ff0db"
-
-apply from: 'github.gradle', to: project
-
-println "=== Configuring $name ==="
-
-def root = project
-
-apply plugin: 'eclipse'
-// java 7 compat
-ext.JAVA_COMPAT = '1.7'
-ext.eclipse17='org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-' + JAVA_COMPAT
-eclipse.classpath.containers.clear()
-eclipse.classpath.containers eclipse17
-compileJava.sourceCompatibility = JAVA_COMPAT
-compileJava.targetCompatibility = JAVA_COMPAT
-
-apply plugin: 'apt2'
-
-eclipse {
-    jdt {
-        sourceCompatibility = JAVA_COMPAT
-        targetCompatibility = JAVA_COMPAT
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+        maven {
+            url "http://techshroom.github.io/downloads/maven"
+        }
+    }
+    
+    configurations.all {
+        resolutionStrategy {
+            cacheChangingModulesFor 0, 'seconds'
+        }
+    }
+    dependencies {
+        classpath group: 'com.techshroom', name: 'Aversion', version: '1.0.1-SNAPSHOT'
     }
 }
 
-// eclipse bug workaround
-project.tasks.eclipse.dependsOn('cleanEclipse')
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'eclipse'
+apply plugin: 'aversion-util'
+apply plugin: 'aversion-maven'
+apply plugin: 'aversion-apt'
+
+util {
+    javaVersion = '1.7'
+}
+
+mainClassName = 'com.techshroom.hendrix.Main'
+
+println "=== Configuring $name ==="
 
 repositories {
     mavenCentral()
@@ -104,18 +101,4 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.+'
 }
 
-apply plugin: 'maven'
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: file("../Techshroom.github.io/downloads/maven").toURI().toURL())
-        }
-    }
-}
-
 println '=== Complete ==='
-
-if (_hasProperty("TRAVIS") && _property("TRAVIS").toBoolean()) {
-    apply from: 'travis.gradle', to: project
-}

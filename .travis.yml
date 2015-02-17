@@ -6,8 +6,6 @@ install: true
 script: "./gradlew build --info"
 before_install:
 - export JAVA7_HOME=$(jdk_switcher home jdk7)
-after_success:
-- "./gradlew travisRelease"
 after_failure:
 - "./gradlew build --stacktrace --debug"
 env:
